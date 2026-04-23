@@ -19,6 +19,7 @@ import { RedisProvider } from "../redis/redis.provider";
 import Redis from "ioredis";
 import { ConfigService } from "@nestjs/config";
 import { SignOptions } from "jsonwebtoken";
+import { UserType } from "src/interfaces.enums/user.types";
 
 @Injectable()
 export class AuthService {
@@ -250,12 +251,14 @@ export class AuthService {
         }
     }
 
-    async authenticated(): Promise<ApiResponse<{ authenticated: boolean }>> {
+    async authenticated(user: UserType): Promise<ApiResponse<{ user: UserType, authenticated: boolean }>> {
+        const userData = await this.userRepo.findOneBy({ id: String(user.id) });
         return {
             success: true,
             statusCode: 200,
             message: "Authenticated",
-            data: {
+            data: { 
+                user: userData as UserType,
                 authenticated: true
             }
         }

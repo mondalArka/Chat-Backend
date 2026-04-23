@@ -6,6 +6,8 @@ import { SessionDto } from "./dto/session.dto";
 import { SingnInDto } from "./dto/signin.dto";
 import type { Request, Response } from "express";
 import { sessionSetter } from "src/helpers/cookie.config";
+import { CurrentUser } from "src/decorators/user.decorator";
+import type { UserType } from "src/interfaces.enums/user.types";
 
 @Controller("auth")
 export class AuthController {
@@ -81,7 +83,9 @@ export class AuthController {
     }
 
     @Get("/me")
-    async getMe() {
-        return this.authService.authenticated();
+    async getMe(
+        @CurrentUser() user: UserType
+    ) {
+        return this.authService.authenticated(user);
     }
 }
