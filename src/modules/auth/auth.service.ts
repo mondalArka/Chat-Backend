@@ -39,7 +39,7 @@ export class AuthService {
     }
 
     async signup(user: SignupDto): Promise<ApiResponse<{
-        session: Partial<Sessions>
+        sessionId: string
     }>> {
         const sessionExists = await this.sessionRepo.findByEmail(user.email);
         const userExists = await this.userRepo.findByEmail(user.email);
@@ -65,9 +65,7 @@ export class AuthService {
                 statusCode: 200,
                 message: "OTP sent to email",
                 data: {
-                    session: {
-                        sessionId: sessionExists.sessionId
-                    }
+                    sessionId: sessionExists.sessionId
                 }
             };
         }
@@ -85,9 +83,7 @@ export class AuthService {
             statusCode: 201,
             message: "User created",
             data: {
-                session: {
-                    sessionId: data.sessionId
-                }
+                sessionId: data.sessionId
             }
         };
     }
@@ -257,7 +253,7 @@ export class AuthService {
             success: true,
             statusCode: 200,
             message: "Authenticated",
-            data: { 
+            data: {
                 user: userData as UserType,
                 authenticated: true
             }
