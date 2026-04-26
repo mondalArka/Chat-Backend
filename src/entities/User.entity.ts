@@ -1,4 +1,6 @@
-import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Participant } from "./Participant.entity";
+import { Message } from "./Message.entity";
 @Entity("users")
 @Index("email_idx", ["email"], { unique: true })
 export class User extends BaseEntity {
@@ -11,6 +13,12 @@ export class User extends BaseEntity {
 
     @Column({ type: "varchar", length: 255, nullable: false, unique: true })
     email: string;
+
+    @OneToMany(() => Participant, participant => participant.user)
+    participants: Participant[];
+
+    @OneToMany(() => Message, message => message.sender)
+    messages: Message[];
 
     @CreateDateColumn({ type: "timestamp" })
     createdAt: Date;
