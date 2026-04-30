@@ -18,7 +18,10 @@ export class Media extends BaseEntity {
     message: Message;
 
     @Column({ type: "varchar", length: 255, nullable: false })
-    filename: string;
+    fileName: string;
+
+    @Column({ type: "varchar", length: 255, nullable: false })
+    originalName: string;
 
     @Column({ type: "int", nullable: false })
     order: number

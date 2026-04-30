@@ -1,4 +1,4 @@
-import { BaseEntity, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./User.entity";
 import { Chat } from "./Chat.entity";
 
@@ -15,6 +15,9 @@ export class Participant extends BaseEntity {
     @ManyToOne(() => User, user => user.participants, { onDelete: "CASCADE" })
     @JoinColumn({ name: "userId", foreignKeyConstraintName: "FK_user_participants" })
     user: User;
+
+    @Column({ type: "int", nullable: false, default: 0 })
+    unreadCount: number;
 
     @ManyToOne(() => Chat, chat => chat.participants, { onDelete: "CASCADE" })
     @JoinColumn({ name: "chatId", foreignKeyConstraintName: "FK_chat_participants" })

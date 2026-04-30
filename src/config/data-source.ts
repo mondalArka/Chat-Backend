@@ -2,8 +2,6 @@ import { DataSourceOptions } from "typeorm";
 import { ConfigService } from "@nestjs/config";
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
-import { User } from "src/entities/User.entity";
-import { Sessions } from "src/entities/Otp.entity";
 
 console.log(__dirname + "/src/entities/User.entity.ts")
 dotenv.config();

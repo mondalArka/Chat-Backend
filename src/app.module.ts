@@ -12,6 +12,8 @@ import { AuthGuard } from './guards/auth.guard';
 import { RepositoryModule } from './repositories/repository.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { RedisModule } from './modules/redis/redis.module';
+import { MessageModule } from './modules/message/message.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -28,7 +30,9 @@ import { RedisModule } from './modules/redis/redis.module';
     }),
     RepositoryModule.forFeature(['USER_REPOSITORY']),
     JWTModule.forRoot(),
-    AuthModule
+    AuthModule,
+    ChatModule,
+    MessageModule
   ],
   controllers: [AppController],
   providers: [
