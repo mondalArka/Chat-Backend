@@ -4,6 +4,7 @@ import { ApiResponse } from "src/interfaces.enums/response.types";
 import { ChatRepository } from "src/repositories/chat.reposiotries";
 import { CreateChatDto } from "./dto/createChat.dto";
 import { ParticipantRepository } from "src/repositories/participant.repositories";
+import { Participant } from "src/entities/Participant.entity";
 
 @Injectable()
 export class ChatService {
@@ -31,6 +32,22 @@ export class ChatService {
             success: true,
             message: "Chat created successfully",
             data: save
+        }
+    }
+
+    async getUserChats(userId: string): Promise<ApiResponse<Array<Partial<Participant>>>> {
+        const chats = await this.participantRepo.find({
+            where: {
+                userId
+            },
+            relations: ["chat","chat.lastMessage"]
+        });
+
+        return {
+            statusCode: 200,
+            success: true,
+            message: "Chats fetched successfully",
+            data: chats
         }
     }
 }

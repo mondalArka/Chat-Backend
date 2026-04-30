@@ -5,7 +5,11 @@ import { RepositoryModule } from "src/repositories/repository.module";
 
 @Module({
     imports: [
-        RepositoryModule.forFeature(["CHAT_REPOSITORY", "PARTICIPANT_REPOSITORY"])
+        RepositoryModule.forFeature(
+            [
+                "CHAT_REPOSITORY", 
+                "PARTICIPANT_REPOSITORY"
+            ])
     ],
     providers: [ChatService],
     controllers: [ChatController]

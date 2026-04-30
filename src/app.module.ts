@@ -14,6 +14,7 @@ import { SharedModule } from './modules/shared/shared.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { MessageModule } from './modules/message/message.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { SocketModule } from './modules/websocket/socket.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ChatModule } from './modules/chat/chat.module';
       isGlobal: true,
       envFilePath: '.env'
     }),
+    SocketModule,
     SharedModule,
     RedisModule,
     TypeOrmModule.forRootAsync({
