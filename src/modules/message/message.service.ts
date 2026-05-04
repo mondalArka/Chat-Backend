@@ -10,6 +10,7 @@ import { ParticipantRepository } from "src/repositories/participant.repositories
 import { Not } from "typeorm";
 import { ChatRepository } from "src/repositories/chat.reposiotries";
 import { SocketGateway } from "../websocket/socket.service";
+import { Message } from "src/entities/Message.entity";
 
 @Injectable()
 export class MessageService {
@@ -66,6 +67,19 @@ export class MessageService {
             success: true,
             message: "Message sent successfully",
             data: {}
+        }
+    }
+
+    async getMessage(chatId: string): Promise<ApiResponse<Partial<Message[]>>> {
+        const message = await this.messageRepository.find({
+            where: { chatId },
+            relations: ["sender", "medias"]
+        });
+        return {
+            statusCode: 200,
+            success: true,
+            message: "Messages fetched successfully",
+            data: message
         }
     }
 }

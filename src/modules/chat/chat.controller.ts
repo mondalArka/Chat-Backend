@@ -20,8 +20,8 @@ export class ChatController {
     async getChats(
         @CurrentUser() user: UserType
     ) {
-        return this.chatService.getUserChats(
-            user.id
+        return this.chatService.getChat(
+            user
         );
     }
 }

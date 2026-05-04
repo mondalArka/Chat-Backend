@@ -11,4 +11,13 @@ export class ParticipantRepository extends Repository<Participant> {
     async insertParticipant(body: Array<Partial<Participant>>): Promise<InsertResult> {
         return this.insert(body);
     }
+
+    async getChatByUser(userId: string): Promise<Partial<Participant[]>> {
+        const query = this.createQueryBuilder("participants")
+            .where("userId = :userId", { userId })
+            .leftJoinAndSelect("participants.chat", "chat")
+            .leftJoinAndSelect("chat.lastMessage", "lastMessage")
+            .getRawMany();
+        return query;
+    }
 }

@@ -33,7 +33,7 @@ export class SocketGateway {
     server: Server;
 
     async handleConnection(socket: Socket) {
-        const sessionId = socket.handshake.auth.sessionId;
+        const sessionId = socket.handshake.headers?.cookie;
         if (!sessionId) {
             socket.disconnect();
             return;

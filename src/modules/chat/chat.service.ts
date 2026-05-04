@@ -5,6 +5,7 @@ import { ChatRepository } from "src/repositories/chat.reposiotries";
 import { CreateChatDto } from "./dto/createChat.dto";
 import { ParticipantRepository } from "src/repositories/participant.repositories";
 import { Participant } from "src/entities/Participant.entity";
+import { UserType } from "src/interfaces.enums/user.types";
 
 @Injectable()
 export class ChatService {
@@ -35,18 +36,12 @@ export class ChatService {
         }
     }
 
-    async getUserChats(userId: string): Promise<ApiResponse<Array<Partial<Participant>>>> {
-        const chats = await this.participantRepo.find({
-            where: {
-                userId
-            },
-            relations: ["chat","chat.lastMessage"]
-        });
-
+    async getChat(user: UserType): Promise<ApiResponse<Partial<Participant[]>>> {
+        const chats = await this.participantRepo.getChatByUser(user.id);
         return {
             statusCode: 200,
             success: true,
-            message: "Chats fetched successfully",
+            message: "Chats fetched",
             data: chats
         }
     }

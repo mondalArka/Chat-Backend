@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { MessageService } from "./message.service";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { multerConfig } from "src/helpers/multer.config";
@@ -27,5 +27,10 @@ export class MessageController {
             files,
             user
         );
+    }
+
+    @Get("/:chatId")
+    async getMessage(@Param("chatId") chatId: string) {
+        return this.messageService.getMessage(chatId);
     }
 }
