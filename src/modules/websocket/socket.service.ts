@@ -16,7 +16,7 @@ import { ParticipantRepository } from "src/repositories/participant.repositories
 
 @WebSocketGateway({
     cors: {
-        origin: "*",
+        origin: "http://localhost:5173",
         credentials: true
     }
 })
@@ -33,11 +33,18 @@ export class SocketGateway {
     server: Server;
 
     async handleConnection(socket: Socket) {
-        const sessionId = socket.handshake.headers?.cookie;
-        if (!sessionId) {
-            socket.disconnect();
-            return;
-        }
+        const cookieHeader = socket.handshake.headers?.cookie;
+        if (!cookieHeader) return socket.disconnect();
+
+        const cookies = Object.fromEntries(
+            cookieHeader.split(';').map(c => {
+                const [key, ...val] = c.trim().split('=');
+                return [key, val.join('=')];
+            })
+        );
+        const sessionId = cookies['sessionId'];
+        if (!sessionId) return socket.disconnect();
+
         let redis = this.redisService.getRedisClient();
         const session = await redis.get(`session:${sessionId}`);
 
@@ -45,12 +52,13 @@ export class SocketGateway {
             return socket.disconnect();
 
         const parsed = JSON.parse(session);
+
         if (!parsed?.refreshToken)
             return socket.disconnect();
 
         let decode: any;
         try {
-            decode = this.jwtService.verify(parsed.refreshToken);
+            decode = this.jwtService.verify(parsed.refreshToken, { secret: process.env.JWT_SECRET });
         } catch (e) {
             console.error(e);
             return socket.disconnect();
@@ -69,8 +77,6 @@ export class SocketGateway {
                 relations: ["chat"]
             }
         );
-        if (particpant.length == 0)
-            return socket.disconnect();
 
         particpant.forEach(participant => {
             socket.join(participant.chat.id);
@@ -82,7 +88,18 @@ export class SocketGateway {
         console.log("Socket disconnected:", socket.id);
     }
 
-    sendMessage(data: { message: string, chatId: string }) {
+    sendMessage(data: {
+        id: string,
+        type: string,
+        message: string,
+        chatId: string,
+        sender: object,
+        medias: object,
+        isRead: boolean,
+        createdAt: Date,
+        updatedAt: Date,
+        deletedAt: Date
+    }) {
         console.log("Message sent:", data);
         this.server.to(data.chatId).emit("receive-message", data);
     }

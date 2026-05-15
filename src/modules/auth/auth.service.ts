@@ -154,7 +154,7 @@ export class AuthService {
             email: signinDto.email,
             expiresAt: new Date(Date.now() + 2 * 60 * 1000),
             sessionId,
-            otp,
+            otp:"123456",
         });
         return {
             success: true,
@@ -191,7 +191,7 @@ export class AuthService {
         await this.sessionRepo.deleteBySessionId(sessionExists.sessionId);
         await this.redis.set(`session:${redisSession}`, JSON.stringify({
             refreshToken
-        }), "EX", 20 * 60);
+        }), "EX", 20 * 60 *60);
         return {
             success: true,
             statusCode: 200,

@@ -1,14 +1,16 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/createChat.dto';
 import { CurrentUser } from 'src/decorators/user.decorator';
 import type { UserType } from 'src/interfaces.enums/user.types';
+import { ReadChatDto } from './dto/readChat.dto';
 
 @Controller('chat')
 export class ChatController {
     constructor(
         private readonly chatService: ChatService
     ) { }
+
     @Post("/")
     async createChat(
         @Body() chatDto: CreateChatDto
@@ -22,6 +24,17 @@ export class ChatController {
     ) {
         return this.chatService.getChat(
             user
+        );
+    }
+
+    @Patch("/read")
+    async readChatById(
+        @CurrentUser() user: UserType,
+        @Body() body: ReadChatDto
+    ) {
+        return this.chatService.readChat(
+            body.chatId,
+            user.id
         );
     }
 }

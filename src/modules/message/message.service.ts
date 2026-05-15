@@ -30,7 +30,7 @@ export class MessageService {
         body: CreateMessageDto,
         files: { docs?: Express.Multer.File[] },
         user: UserType | null
-    ): Promise<ApiResponse<{}>> {
+    ): Promise<ApiResponse<any>> {
         const save = await this.messageRepository.saveMessage({ ...body, senderId: user?.id });
         let docData: Partial<Media>[] = [];
         if (files && files.docs && files.docs.length > 0) {
@@ -59,14 +59,41 @@ export class MessageService {
             "unreadCount", 1);
 
         this.socketGateway.sendMessage({
+            id: save.id,
             message: save.message,
-            chatId: body.chatId
+            chatId: body.chatId,
+            type: save.type,
+            sender: {
+                id: user?.id as string,
+                email: user?.email as string,
+                name: user?.name as string
+            },
+            isRead: false,
+            medias: docData,
+            createdAt: save.createdAt,
+            updatedAt: save.updatedAt,
+            deletedAt: save.deletedAt
         });
+
         return {
             statusCode: 200,
             success: true,
             message: "Message sent successfully",
-            data: {}
+            data: {
+                id: save.id,
+                message: save.message,
+                chatId: body.chatId,
+                type: save.type,
+                sender: {
+                    id: user?.id as string,
+                    email: user?.email as string,
+                    name: user?.name as string
+                },
+                medias: docData,
+                createdAt: save.createdAt,
+                updatedAt: save.updatedAt,
+                deletedAt: save.deletedAt
+            }
         }
     }
 

@@ -12,12 +12,42 @@ export class ParticipantRepository extends Repository<Participant> {
         return this.insert(body);
     }
 
-    async getChatByUser(userId: string): Promise<Partial<Participant[]>> {
-        const query = this.createQueryBuilder("participants")
-            .where("userId = :userId", { userId })
-            .leftJoinAndSelect("participants.chat", "chat")
-            .leftJoinAndSelect("chat.lastMessage", "lastMessage")
-            .getRawMany();
-        return query;
-    }
+  async getChatByUser(userId: string): Promise<any[]> {
+    const query = await this.createQueryBuilder("participants")
+        .select("chat.id", "chatId")
+        .addSelect("chat.chatName", "chatName")
+        .addSelect("chat.type", "chatType")
+        .addSelect("chat.createdAt", "createdAt")
+        .addSelect("chat.updatedAt", "updatedAt")
+        .addSelect("chat.chatName", "chatName")
+        .addSelect("lastMessage.message", "lastMessageContent")
+        .addSelect("lastMessage.createdAt", "lastMessageTime")
+        .addSelect(
+            `JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'userId', allParticipants.userId,
+                'name', allUser.name,
+                'email', allUser.email,
+                'unreadCount', allParticipants.unreadCount
+            )
+        )`,
+            "participants"
+        )
+        .where("participants.userId = :userId", { userId })
+        .andWhere("participants.deletedAt IS NULL")
+        .leftJoin("participants.chat", "chat")
+        .leftJoin("chat.lastMessage", "lastMessage")
+        .leftJoin(                                      // ← removed the userId filter
+            "chat.participants",
+            "allParticipants",
+            "allParticipants.deletedAt IS NULL"         // ← all participants including self
+        )
+        .leftJoin("allParticipants.user", "allUser")
+        .groupBy("chat.id")
+        .addGroupBy("lastMessage.id")
+        .orderBy("lastMessage.createdAt", "DESC")
+        .getRawMany();
+
+    return query;
+}
 }

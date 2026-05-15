@@ -49,7 +49,9 @@ export class AuthGuard implements CanActivate {
             throw new UnauthorizedException("No user found");
 
         req.user = {
-            id: user.id
+            id: user.id,
+            name: user.name,
+            email: user.email
         };
 
         return true;
