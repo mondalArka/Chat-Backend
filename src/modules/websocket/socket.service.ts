@@ -98,7 +98,8 @@ export class SocketGateway {
         isRead: boolean,
         createdAt: Date,
         updatedAt: Date,
-        deletedAt: Date
+        deletedAt: Date,
+        unreadCount?: number
     }) {
         console.log("Message sent:", data);
         this.server.to(data.chatId).emit("receive-message", data);

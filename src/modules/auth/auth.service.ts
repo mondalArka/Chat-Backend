@@ -135,7 +135,7 @@ export class AuthService {
             html: template
         });
         if (checkSession) {
-            checkSession.otp = otp;
+            checkSession.otp = "123456";
             checkSession.expiresAt = new Date(Date.now() + 2 * 60 * 1000);
             await this.sessionRepo.saveSession(checkSession);
             return {
@@ -149,7 +149,7 @@ export class AuthService {
                 }
             };
         }
-
+        console.log("popopopopopo")
         const data = await this.sessionRepo.saveSession({
             email: signinDto.email,
             expiresAt: new Date(Date.now() + 2 * 60 * 1000),

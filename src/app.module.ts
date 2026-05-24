@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,6 +15,7 @@ import { RedisModule } from './modules/redis/redis.module';
 import { MessageModule } from './modules/message/message.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { SocketModule } from './modules/websocket/socket.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -34,7 +35,8 @@ import { SocketModule } from './modules/websocket/socket.module';
     JWTModule.forRoot(),
     AuthModule,
     ChatModule,
-    MessageModule
+    MessageModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [
@@ -49,4 +51,10 @@ import { SocketModule } from './modules/websocket/socket.module';
     }
   ],
 })
-export class AppModule { }
+export class AppModule implements OnModuleInit {
+  onModuleInit() {
+    console.log("🕐 Server timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
+    console.log("🕐 UTC offset:", new Date().getTimezoneOffset(), "minutes");
+    console.log("🕐 Current server time:", new Date().toString());
+  }
+}

@@ -2,6 +2,7 @@ import { DataSourceOptions } from "typeorm";
 import { ConfigService } from "@nestjs/config";
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
+import { TimezoneSubscriber } from "./subcribers/time.subcriber";
 
 console.log(__dirname + "/src/entities/User.entity.ts")
 dotenv.config();
@@ -18,6 +19,10 @@ export const dataSourceOptions: DataSourceOptions = {
     logging: false,
     migrations: [isCompiled ? process.cwd() + "/dist/config/migrations/*.{ts,js}" : process.cwd() + "/src/config/migrations/*.{ts,js}"],
     subscribers: [],
+    timezone: "+05:30",
+    extra: {
+        timezone: "+05:30" // ✅ sets MySQL session timezone on each connection
+    },
 }
 
 export const useDataSourceFactory = (config: ConfigService): DataSourceOptions => {
@@ -33,6 +38,10 @@ export const useDataSourceFactory = (config: ConfigService): DataSourceOptions =
         logging: false,
         migrations: [isCompiled ? process.cwd() + "/dist/config/migrations/*.{ts,js}" : process.cwd() + "/src/config/migrations/*.{ts,js}"],
         subscribers: [],
+        timezone: "+05:30",
+        extra: {
+            timezone: "+05:30" // ✅ sets MySQL session timezone on each connection
+        },
     }
 }
 

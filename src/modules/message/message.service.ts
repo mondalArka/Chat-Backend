@@ -52,11 +52,18 @@ export class MessageService {
             body.chatId,
             { lastMessage: { id: save.id } }
         );
-        await this.participantRepo.increment({
+
+        const finUnread = await this.participantRepo.findOne({
+            where: {
+                chatId: body.chatId,
+                userId: Not(user!.id as string),
+            },
+        });
+        await this.participantRepo.update({
             chatId: body.chatId,
             userId: Not(user!.id as string),
         },
-            "unreadCount", 1);
+            { unreadCount: (finUnread!.unreadCount + 1) || 1 });
 
         this.socketGateway.sendMessage({
             id: save.id,
@@ -69,6 +76,7 @@ export class MessageService {
                 name: user?.name as string
             },
             isRead: false,
+            unreadCount: (finUnread!.unreadCount + 1) || 1,
             medias: docData,
             createdAt: save.createdAt,
             updatedAt: save.updatedAt,
