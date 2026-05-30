@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/createChat.dto';
 import { CurrentUser } from 'src/decorators/user.decorator';
@@ -36,5 +36,13 @@ export class ChatController {
             body.chatId,
             user.id
         );
+    }
+
+    @Get("/:chatId")
+    async getParticipantsByChat(
+        @CurrentUser() user: UserType,
+        @Param("chatId") chatId: string
+    ) {
+        return this.chatService.getParticipantsByChat(user, chatId);
     }
 }

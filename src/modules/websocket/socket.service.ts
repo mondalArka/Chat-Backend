@@ -95,6 +95,7 @@ export class SocketGateway {
         chatId: string,
         sender: object,
         medias: object,
+        replyToMessage?: object | null,
         isRead: boolean,
         createdAt: Date,
         updatedAt: Date,

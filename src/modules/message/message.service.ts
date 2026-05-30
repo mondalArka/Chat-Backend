@@ -31,7 +31,23 @@ export class MessageService {
         files: { docs?: Express.Multer.File[] },
         user: UserType | null
     ): Promise<ApiResponse<any>> {
-        const save = await this.messageRepository.saveMessage({ ...body, senderId: user?.id });
+        let getReplyMessage: Message | null = null;
+
+        if (body.replyToMessageId) {
+            getReplyMessage = await this.messageRepository.findOne({
+                where: {
+                    id: body.replyToMessageId
+                },
+                relations: ["medias"]
+            });
+        }
+        const save = await this.messageRepository.saveMessage(
+            {
+                ...body,
+                senderId: user?.id,
+                ...(body.replyToMessageId && { replyToMessage: { id: body.replyToMessageId } }) as Partial<Message>
+            });
+
         let docData: Partial<Media>[] = [];
         if (files && files.docs && files.docs.length > 0) {
             docData = files.docs.map((file, index) => {
@@ -48,17 +64,19 @@ export class MessageService {
             await this.mediaRepo.insertMedia(docData);
         }
 
-        await this.chatRepo.update(
-            body.chatId,
-            { lastMessage: { id: save.id } }
-        );
+        const [updation, finUnread] = await Promise.all([
+            this.chatRepo.update(
+                body.chatId,
+                { lastMessage: { id: save.id } }
+            ),
+            this.participantRepo.findOne({
+                where: {
+                    chatId: body.chatId,
+                    userId: Not(user!.id as string),
+                },
+            })
+        ]);
 
-        const finUnread = await this.participantRepo.findOne({
-            where: {
-                chatId: body.chatId,
-                userId: Not(user!.id as string),
-            },
-        });
         await this.participantRepo.update({
             chatId: body.chatId,
             userId: Not(user!.id as string),
@@ -75,6 +93,7 @@ export class MessageService {
                 email: user?.email as string,
                 name: user?.name as string
             },
+            ...(body.replyToMessageId && { replyToMessage: getReplyMessage }),
             isRead: false,
             unreadCount: (finUnread!.unreadCount + 1) || 1,
             medias: docData,
@@ -97,7 +116,8 @@ export class MessageService {
                     email: user?.email as string,
                     name: user?.name as string
                 },
-                medias: docData,
+                ...(body.replyToMessageId && { replyTo: getReplyMessage }),
+                ...(docData.length > 0 && { medias: docData }),
                 createdAt: save.createdAt,
                 updatedAt: save.updatedAt,
                 deletedAt: save.deletedAt
@@ -108,7 +128,7 @@ export class MessageService {
     async getMessage(chatId: string): Promise<ApiResponse<Partial<Message[]>>> {
         const message = await this.messageRepository.find({
             where: { chatId },
-            relations: ["sender", "medias"]
+            relations: ["sender", "medias", "replyToMessage", "replyToMessage.medias"]
         });
         return {
             statusCode: 200,

@@ -6,8 +6,7 @@ import { CreateChatDto } from "./dto/createChat.dto";
 import { ParticipantRepository } from "src/repositories/participant.repositories";
 import { Participant } from "src/entities/Participant.entity";
 import { UserType } from "src/interfaces.enums/user.types";
-import { In } from "typeorm";
-import { HTTPException } from "src/filter/exception.filter";
+import { User } from "src/entities/User.entity";
 
 @Injectable()
 export class ChatService {
@@ -73,6 +72,22 @@ export class ChatService {
             statusCode: 200,
             success: true,
             message: "Messages read"
+        }
+    }
+
+    async getParticipantsByChat(user: UserType, chatId: string): Promise<ApiResponse<Partial<User[]>>> {
+        let participants = await this.participantRepo.find({
+            where: { chatId },
+            relations: ["user"]
+        });
+
+        const users = participants.filter((p) => p.user.id !== user.id).map((p) => p.user);
+
+        return {
+            statusCode: 200,
+            success: true,
+            message: "Participants fetched",
+            data: users
         }
     }
 }

@@ -16,12 +16,17 @@ import { MessageModule } from './modules/message/message.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { SocketModule } from './modules/websocket/socket.module';
 import { UserModule } from './modules/user/user.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env'
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: `${process.cwd()}/public`,
+      serveRoot: '/'// public name is excluded
     }),
     SocketModule,
     SharedModule,

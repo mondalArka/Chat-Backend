@@ -38,6 +38,10 @@ export class Message extends BaseEntity {
     @JoinColumn({ name: "senderId", foreignKeyConstraintName: "FK_user_messages" })
     sender: User;
 
+    @ManyToOne(() => Message, { nullable: true })
+    @JoinColumn({ name: "replyToMessageId", foreignKeyConstraintName: "FK_message_messages" })
+    replyToMessage: Message;
+
     @CreateDateColumn({ type: "timestamp" })
     createdAt: Date;
 
