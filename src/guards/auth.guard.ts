@@ -19,8 +19,9 @@ export class AuthGuard implements CanActivate {
         if (isPublic)
             return true;
         const req = context.switchToHttp().getRequest();
-        const sessionId = req.cookies['sessionId']
+        const sessionId = req.cookies?.['sessionId']
 
+        console.log("cookies:", req.cookies);
         if (!sessionId)
             throw new UnauthorizedException("No session");
 

@@ -38,6 +38,7 @@ export class ChatController {
         );
     }
 
+    // get participants by chatId
     @Get("/:chatId")
     async getParticipantsByChat(
         @CurrentUser() user: UserType,

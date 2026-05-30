@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpException, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { Public } from "src/decorators/public.decorator";
 import { SignupDto } from "./dto/signup.dto";
 import { AuthService } from "./auth.service";
@@ -34,6 +34,7 @@ export class AuthController {
 
     @Public()
     @Post("signin")
+    @HttpCode(200)
     async login(
         @Body() body: SingnInDto
     ) {
@@ -42,6 +43,7 @@ export class AuthController {
 
     @Public()
     @Post("login-verify")
+    @HttpCode(200)
     async loginVerify(
         @Body() body: SessionDto,
         @Res({ passthrough: true }) res: Response

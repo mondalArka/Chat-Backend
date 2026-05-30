@@ -20,7 +20,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate": "node -r ts-node/register ./node_modules/typeorm/cli.js migration:generate src/config/migrations/$mig_name -d src/config/data-source.ts",
     "migration:run": "node -r ts-node/register ./node_modules/typeorm/cli.js migration:run -d src/config/data-source.ts",
-    "migration:revert": "node -r ts-node/register ./node_modules/typeorm/cli.js migration:revert -d src/config/data-source.ts"
+    "migration:revert": "node -r ts-node/register ./node_modules/typeorm/cli.js migration:revert -d src/config/data-source.ts",
+    "test:auth:login": "jest --config ./test/jest-e2e.json auth/login.e2e-spec.ts --detectOpenHandles",
+    "test:chat": "jest --config ./test/jest-e2e.json chat/ --detectOpenHandles",
+    "test:message": "jest --config ./test/jest-e2e.json message/ --detectOpenHandles",
+    "test:user": "jest --config ./test/jest-e2e.json user/ --detectOpenHandles",
+    "test:all": "jest --config ./test/jest-e2e.json --detectOpenHandles"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.4",

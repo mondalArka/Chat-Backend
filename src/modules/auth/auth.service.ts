@@ -149,7 +149,6 @@ export class AuthService {
                 }
             };
         }
-        console.log("popopopopopo")
         const data = await this.sessionRepo.saveSession({
             email: signinDto.email,
             expiresAt: new Date(Date.now() + 2 * 60 * 1000),
