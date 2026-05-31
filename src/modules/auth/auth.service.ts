@@ -24,6 +24,7 @@ import { UserType } from "src/interfaces.enums/user.types";
 @Injectable()
 export class AuthService {
     private redis: Redis;
+    private redisExpire: number;
     constructor(
         @InjectQueue("email-queue")
         private readonly emailQueue: Queue,
@@ -36,6 +37,7 @@ export class AuthService {
         private readonly configService: ConfigService
     ) {
         this.redis = this.redisService.getRedisClient();
+        this.redisExpire = Number(this.configService.get("REDIS_EXPIRE"));
     }
 
     async signup(user: SignupDto): Promise<ApiResponse<{
@@ -153,7 +155,7 @@ export class AuthService {
             email: signinDto.email,
             expiresAt: new Date(Date.now() + 2 * 60 * 1000),
             sessionId,
-            otp:"123456",
+            otp: "123456",
         });
         return {
             success: true,
@@ -190,7 +192,7 @@ export class AuthService {
         await this.sessionRepo.deleteBySessionId(sessionExists.sessionId);
         await this.redis.set(`session:${redisSession}`, JSON.stringify({
             refreshToken
-        }), "EX", 20 * 60 *60);
+        }), "EX", this.redisExpire + 900); // 15 min with access token logged in
         return {
             success: true,
             statusCode: 200,
@@ -202,9 +204,9 @@ export class AuthService {
         }
     }
 
-    async logout(sessionId: string): Promise<ApiResponse<{}>> {
+    async logout(sessionId: string, user: UserType): Promise<ApiResponse<{}>> {
         const redis = this.redisService.getRedisClient();
-        await redis.del(`session:${sessionId}`);
+        await redis.del(`session:${sessionId}`, `${user.id}:me`);
         return {
             success: true,
             statusCode: 200,
@@ -247,7 +249,23 @@ export class AuthService {
     }
 
     async authenticated(user: UserType): Promise<ApiResponse<{ user: UserType, authenticated: boolean }>> {
+        const cache = await this.redis.get(`${user.id}:me`);
+        if (cache)
+            return {
+                success: true,
+                statusCode: 200,
+                message: "Authenticated",
+                data: {
+                    user: JSON.parse(cache) as UserType,
+                    authenticated: true
+                }
+            };
+
         const userData = await this.userRepo.findOneBy({ id: String(user.id) });
+        await this.redis.set(
+            `${user.id}:me`,
+            JSON.stringify(userData), "EX", (this.redisExpire + 900)  // 30 minutes
+        );
         return {
             success: true,
             statusCode: 200,

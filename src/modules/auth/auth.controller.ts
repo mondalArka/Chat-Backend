@@ -56,14 +56,15 @@ export class AuthController {
     @Get("/logout")
     async logout(
         @Req() req: Request,
-        @Res({ passthrough: true }) res: Response
+        @Res({ passthrough: true }) res: Response,
+        @CurrentUser() user: UserType
     ) {
         const sessionId = req.cookies['sessionId'];
         if (!sessionId)
             throw new HttpException("Session not found", 404);
 
         res.clearCookie("sessionId");
-        return this.authService.logout(sessionId);
+        return this.authService.logout(sessionId, user);
     }
 
     @Get("/refresh-token")

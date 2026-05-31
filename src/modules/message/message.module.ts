@@ -3,6 +3,7 @@ import { MessageController } from "./message.controller";
 import { MessageService } from "./message.service";
 import { RepositoryModule } from "src/repositories/repository.module";
 import { SocketModule } from "../websocket/socket.module";
+import { RedisModule } from "../redis/redis.module";
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { SocketModule } from "../websocket/socket.module";
             "MEDIA_REPOSITORY",
             "CHAT_REPOSITORY"
         ]),
+        RedisModule,
         SocketModule
     ],
     controllers: [MessageController],

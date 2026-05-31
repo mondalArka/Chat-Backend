@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { MessageService } from "./message.service";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { multerConfig } from "src/helpers/multer.config";
 import { CreateMessageDto } from "./dto/createMessage.dto";
 import { CurrentUser } from "src/decorators/user.decorator";
-import { UserType } from "src/interfaces.enums/user.types";
+import { type UserType } from "src/interfaces.enums/user.types";
 
 @Controller('message')
 export class MessageController {
@@ -30,7 +30,11 @@ export class MessageController {
     }
 
     @Get("/:chatId")
-    async getMessage(@Param("chatId") chatId: string) {
-        return this.messageService.getMessage(chatId);
+    async getMessage(
+        @CurrentUser() user: UserType,
+        @Param("chatId") chatId: string,
+        @Query("cursor") cursor?: string
+    ) {
+        return this.messageService.getMessage(user, chatId, cursor);
     }
 }

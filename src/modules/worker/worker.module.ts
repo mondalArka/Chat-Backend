@@ -19,7 +19,22 @@ import { SharedModule } from "../shared/shared.module";
                 }
             }
         }),
-        BullModule.registerQueue({ name: 'email-queue' }),
+        BullModule.registerQueue(
+            {
+                name: 'email-queue',
+                defaultJobOptions: {
+                    backoff: {
+                        type: 'exponential',
+                        delay: 5000,
+                    },
+                    attempts: 3,
+                    removeOnComplete: true,
+                    removeOnFail: { count: 50, age: 3600 },
+                    delay: 0,
+                    priority: 1
+                },
+            }
+        ),
     ],
     providers: [EmailProcessor],
 })
