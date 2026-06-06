@@ -14,7 +14,8 @@ jobs:
   build:
     uses: ./.github/workflows/Helper-workflow-CI.yaml # call the helperwokflow to build
     secrets:
-       WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_SECRET}}  #pass the secret to the helper workflow
+       WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN}}  #pass the secret to the helper workflow
+       WORKFLOW_SECRET: ${{ secrets.WORKFLOW_SECRET }}
 
   tests:
     needs: build

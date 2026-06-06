@@ -6,13 +6,16 @@ on:
       WORKFLOW_TOKEN:
         required: true
 
+      WORKFLOW_SECRET:
+        required: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - name:  Validate Token
-        run: if [ "${{ secrets.WORKFLOW_TOKEN }}" != "${{ secrets.WORKFLOW_SECRET }"} ]; then exit 1; fi
+        run: if [ "${{ secrets.WORKFLOW_TOKEN }}" != "${{ secrets.WORKFLOW_SECRET }}" ]; then exit 1; fi
 
       - name: Checkout to specific branch
         uses: actions/checkout@v4
