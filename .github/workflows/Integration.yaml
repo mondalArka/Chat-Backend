@@ -38,4 +38,5 @@ jobs:
       - name: Running tests
         run: npm run test
 
-      - run: echo "Tests Passed"
+      - name: Evaluting test results
+        run: echo "Tests Passed"
