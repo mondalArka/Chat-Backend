@@ -2,7 +2,7 @@ name: Helper workflow for CI
 
 on:
   workflow_call:
-    secrets:
+    secrets: # if use inputs values are visible in the logs
       WORKFLOW_TOKEN:
         required: true
 
