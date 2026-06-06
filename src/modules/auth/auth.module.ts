@@ -4,10 +4,11 @@ import { AuthService } from "./auth.service";
 import { RepositoryModule } from "src/repositories/repository.module";
 import { BullModule } from "@nestjs/bullmq";
 import { RedisModule } from "../redis/redis.module";
+import { SessionRepo, UserRepo } from "src/repositories/index.repositories";
 
 @Module({
     imports: [
-        RepositoryModule.forFeature(["USER_REPOSITORY", "SESSION_REPOSITORY"]),
+        RepositoryModule.forFeature([UserRepo, SessionRepo]),
         BullModule.registerQueue({
             name: "email-queue"
         }),

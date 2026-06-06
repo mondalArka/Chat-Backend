@@ -17,6 +17,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { SocketModule } from './modules/websocket/socket.module';
 import { UserModule } from './modules/user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { UserRepo } from './repositories/index.repositories';
 
 @Module({
   imports: [
@@ -36,7 +37,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       useFactory: useDataSourceFactory,
       inject: [ConfigService]
     }),
-    RepositoryModule.forFeature(['USER_REPOSITORY']),
+    RepositoryModule.forFeature([UserRepo]),
     JWTModule.forRoot(),
     AuthModule,
     ChatModule,
