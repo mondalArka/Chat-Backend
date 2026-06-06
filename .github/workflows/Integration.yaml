@@ -1,5 +1,7 @@
 name: Integration ci
 
+run-name: ${{ github.actor }} is testing
+
 on:
   push:
 
@@ -11,7 +13,9 @@ jobs:
   
   build:
     uses: ./.github/workflows/Helper-workflow-CI.yaml # call the helperwokflow to build
-  
+    secrets:
+       WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_SECRET}}  #pass the secret to the helper workflow
+
   tests:
     needs: build
     runs-on: ubuntu-latest
