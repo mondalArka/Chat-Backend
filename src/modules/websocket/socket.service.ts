@@ -13,10 +13,12 @@ import { Inject } from "@nestjs/common";
 import { UserRepository } from "src/repositories/user.repository";
 import { ChatRepository } from "src/repositories/chat.reposiotries";
 import { ParticipantRepository } from "src/repositories/participant.repositories";
+import { config } from "dotenv";
+config();
 
 @WebSocketGateway({
     cors: {
-        origin: "http://localhost:5173",
+        origin: process.env.ALLOWED_ORIGINS,
         credentials: true
     }
 })

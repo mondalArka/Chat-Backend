@@ -1,0 +1,47 @@
+name: Integration ci
+
+run-name: ${{ github.actor }} is testing
+
+on:
+  push:
+
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  
+  build:
+    uses: ./.github/workflows/Helper-workflow-CI.yaml # call the helperwokflow to build
+    secrets: # for secrets it has to mtch secret reserved keyword values are  not visible
+       WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN}}  #pass the secret to the helper workflow
+       WORKFLOW_SECRET: ${{ secrets.WORKFLOW_SECRET }}
+
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to current code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Downloading artifacts
+        uses: actions/download-artifact@v4
+        with: 
+          name: build-output
+          path: dist/
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Running tests
+        run: npm run test
+
+      - name: Evaluting test results
+        run: echo "Tests Passed"

@@ -5,8 +5,7 @@ import { getRepoMappers } from "src/helpers/repo.mappers";
 
 @Module({})
 export class RepositoryModule {
-    static forFeature(tokens: string[]) {
-        const providers = getRepoMappers(tokens);
+    static forFeature(providers: Provider[]) {
         return {
             module: RepositoryModule,
             exports: providers,

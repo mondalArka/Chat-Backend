@@ -3,12 +3,12 @@ import { UserRepo, SessionRepo, MessageRepo, MediaRepo, ChatRepo, ParticipantRep
 
 let repoMappers = new Map<string, Provider>(
     [
-        ["USER_REPOSITORY", UserRepo],
-        ["SESSION_REPOSITORY", SessionRepo],
-        ["MESSAGE_REPOSITORY", MessageRepo],
-        ["MEDIA_REPOSITORY", MediaRepo],
-        ["CHAT_REPOSITORY", ChatRepo],
-        ["PARTICIPANT_REPOSITORY", ParticipantRepo]
+        // ["USER_REPOSITORY", UserRepo],
+        // ["SESSION_REPOSITORY", SessionRepo],
+        // ["MESSAGE_REPOSITORY", MessageRepo],
+        // ["MEDIA_REPOSITORY", MediaRepo],
+        // ["CHAT_REPOSITORY", ChatRepo],
+        // ["PARTICIPANT_REPOSITORY", ParticipantRepo]
     ]
 )
 

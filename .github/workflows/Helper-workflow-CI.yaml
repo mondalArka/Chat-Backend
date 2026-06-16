@@ -1,0 +1,45 @@
+name: Helper workflow for CI
+
+on:
+  workflow_call:
+    secrets: # if use inputs values are visible in the logs
+      WORKFLOW_TOKEN:
+        required: true
+
+      WORKFLOW_SECRET:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name:  Validate Token
+        run: if [ "${{ secrets.WORKFLOW_TOKEN }}" != "${{ secrets.WORKFLOW_SECRET }}" ]; then exit 1; fi
+
+      - name: Checkout to specific branch
+        uses: actions/checkout@v4
+
+      - name: Setting up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installing dependencies
+        run: npm ci
+
+      - name: Build started
+        run: npm run build
+
+      - name: Building completed
+        run: echo "Build successful"
+
+      - name: Uploading build to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+      - name: Upload build
+        run: echo "Build uploaded successfully"

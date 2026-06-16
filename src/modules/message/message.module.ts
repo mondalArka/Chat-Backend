@@ -4,14 +4,15 @@ import { MessageService } from "./message.service";
 import { RepositoryModule } from "src/repositories/repository.module";
 import { SocketModule } from "../websocket/socket.module";
 import { RedisModule } from "../redis/redis.module";
+import { ChatRepo, MediaRepo, MessageRepo, ParticipantRepo } from "src/repositories/index.repositories";
 
 @Module({
     imports: [
         RepositoryModule.forFeature([
-            "MESSAGE_REPOSITORY",
-            "PARTICIPANT_REPOSITORY",
-            "MEDIA_REPOSITORY",
-            "CHAT_REPOSITORY"
+            MessageRepo,
+            ParticipantRepo,
+            MediaRepo,
+            ChatRepo
         ]),
         RedisModule,
         SocketModule

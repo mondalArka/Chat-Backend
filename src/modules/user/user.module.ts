@@ -3,11 +3,12 @@ import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
 import { RepositoryModule } from "src/repositories/repository.module";
 import { RedisModule } from "../redis/redis.module";
+import { UserRepo } from "src/repositories/index.repositories";
 
 @Module({
     imports: [
         RepositoryModule.forFeature([
-            "USER_REPOSITORY"
+            UserRepo
         ]),
         RedisModule
     ],
