@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { EmailProcessor } from "src/processors/email.processors";
 import { SharedModule } from "../shared/shared.module";
+import { InviteProcessor } from "src/processors/invite.processors";
 
 @Module({
     imports: [
@@ -35,7 +36,26 @@ import { SharedModule } from "../shared/shared.module";
                 },
             }
         ),
+        BullModule.registerQueue(
+            {
+                name: 'invite-queue',
+                defaultJobOptions: {
+                    backoff: {
+                        type: 'exponential',
+                        delay: 5000,
+                    },
+                    attempts: 3,
+                    removeOnComplete: true,
+                    removeOnFail: { count: 50, age: 3600 },
+                    delay: 0,
+                    priority: 1
+                },
+            }
+        ),
     ],
-    providers: [EmailProcessor],
+    providers: [
+        EmailProcessor,
+        InviteProcessor
+    ],
 })
 export class WorkerModule { }

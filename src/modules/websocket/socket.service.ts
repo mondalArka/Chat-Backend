@@ -8,7 +8,6 @@ import {
 import { Server, Socket } from "socket.io";
 import { RedisProvider } from "../redis/redis.provider";
 import { JwtService } from "@nestjs/jwt";
-import { UnauthorizedException } from "@nestjs/common/exceptions/unauthorized.exception";
 import { Inject } from "@nestjs/common";
 import { UserRepository } from "src/repositories/user.repository";
 import { ChatRepository } from "src/repositories/chat.reposiotries";
@@ -80,6 +79,7 @@ export class SocketGateway {
             }
         );
 
+        socket.join(`user:${user.id}`);
         particpant.forEach(participant => {
             socket.join(participant.chat.id);
         });
@@ -88,6 +88,25 @@ export class SocketGateway {
 
     handleDisconnect(socket: Socket) {
         console.log("Socket disconnected:", socket.id);
+    }
+
+    async getUsersNonViewingChat(userId: string, chatId: string): Promise<Array<string>> {
+        try {
+            const responses = await this.server
+                .to(chatId)
+                .timeout(2000)
+                .emitWithAck("check-chat", { chatId });
+
+            // responses: array of { userId, isViewing } — one per connected socket in that chat room
+            const viewingUserIds = responses
+                .filter((res: { userId: string; isViewing: boolean }) => Boolean(!res.isViewing) && res.userId !== userId)
+                .map((res: { userId: string; isViewing: boolean }) => res.userId);
+
+            return [...new Set(viewingUserIds)] as unknown as Array<string>; // those who are  not viewing the chat and not the sender
+        } catch (err) {
+            // timeout — treat as "nobody confirmed viewing"
+            return [...new Set()] as unknown as Array<string>;
+        }
     }
 
     sendMessage(data: {
@@ -106,5 +125,10 @@ export class SocketGateway {
     }) {
         console.log("Message sent:", data);
         this.server.to(data.chatId).emit("receive-message", data);
+    }
+
+    checkOnWhichChatIsUser() {
+        console.log("Checking on which chat user is");
+        this.server.emit("check-chat");
     }
 }

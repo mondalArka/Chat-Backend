@@ -4,7 +4,7 @@ import { MessageService } from "./message.service";
 import { RepositoryModule } from "src/repositories/repository.module";
 import { SocketModule } from "../websocket/socket.module";
 import { RedisModule } from "../redis/redis.module";
-import { ChatRepo, MediaRepo, MessageRepo, ParticipantRepo } from "src/repositories/index.repositories";
+import { ChatRepo, MediaRepo, MessageRepo, NotificationRepo, ParticipantRepo } from "src/repositories/index.repositories";
 
 @Module({
     imports: [
@@ -12,7 +12,8 @@ import { ChatRepo, MediaRepo, MessageRepo, ParticipantRepo } from "src/repositor
             MessageRepo,
             ParticipantRepo,
             MediaRepo,
-            ChatRepo
+            ChatRepo,
+            NotificationRepo
         ]),
         RedisModule,
         SocketModule

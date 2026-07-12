@@ -14,6 +14,9 @@ import { ParticipantRepository } from "./participant.repositories";
 import { Provider } from "@nestjs/common";
 import { Media } from "src/entities/Media.entity";
 import { MediaRepository } from "./media.repositories";
+import dataSource from "src/config/data-source";
+import { NotificationRepository } from "./notification.repositories";
+import { UserNotification } from "src/entities/Notification.entity";
 
 const createRepo: IndexRepository["createRepo"] = (baseRepo, entityRepo) => {
     Object.setPrototypeOf(baseRepo, entityRepo);
@@ -25,6 +28,15 @@ export const UserRepo = {
     useFactory: (dataSource: DataSource) => {
         const repo = createRepo(dataSource.getRepository(User), UserRepository.prototype);
         setRepoMappers("USER_REPOSITORY", repo as unknown as Provider);
+        return repo;
+    },
+    inject: [DataSource]
+}
+
+export const NotificationRepo = {
+    provide: 'NOTIFICATION_REPOSITORY',
+    useFactory: (dataSource: DataSource) => {
+        const repo = createRepo(dataSource.getRepository(UserNotification), NotificationRepository.prototype);
         return repo;
     },
     inject: [DataSource]

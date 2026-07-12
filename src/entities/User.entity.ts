@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Participant } from "./Participant.entity";
 import { Message } from "./Message.entity";
+import { UserNotification } from "./Notification.entity";
 @Entity("users")
 @Index("email_idx", ["email"], { unique: true })
 export class User extends BaseEntity {
@@ -19,6 +20,9 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Message, message => message.sender)
     messages: Message[];
+
+    @OneToMany(() => UserNotification, user_notification => user_notification.user)
+    notifications: UserNotification[];
 
     @CreateDateColumn({ type: "timestamp" })
     createdAt: Date;

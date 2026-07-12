@@ -18,6 +18,7 @@ import { SocketModule } from './modules/websocket/socket.module';
 import { UserModule } from './modules/user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { UserRepo } from './repositories/index.repositories';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -42,7 +43,8 @@ import { UserRepo } from './repositories/index.repositories';
     AuthModule,
     ChatModule,
     MessageModule,
-    UserModule
+    UserModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [
