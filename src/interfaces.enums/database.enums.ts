@@ -22,3 +22,10 @@ export const MessageType = {
 } as const
 
 export type MessageTypes = typeof MessageType[keyof typeof MessageType];
+
+export type NotificationCreate = {
+    userId: string;
+    name: string;
+    chatId: string;
+    messageId: string;
+}

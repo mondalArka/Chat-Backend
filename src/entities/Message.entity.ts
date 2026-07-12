@@ -3,6 +3,7 @@ import { User } from "./User.entity";
 import { Media } from "./Media.entity";
 import { Chat } from "./Chat.entity";
 import { MessageType, type MessageTypes } from "../interfaces.enums/database.enums";
+import { UserNotification } from "./Notification.entity";
 
 @Index("FK_user_messages", ["senderId"])
 @Index("FK_chat_messages_createdAt", ["chatId", "createdAt"])
@@ -41,6 +42,9 @@ export class Message extends BaseEntity {
     @ManyToOne(() => Message, { nullable: true })
     @JoinColumn({ name: "replyToMessageId", foreignKeyConstraintName: "FK_message_messages" })
     replyToMessage: Message;
+
+    @OneToOne(() => UserNotification, (notification) => notification.message, { nullable: true })
+    notification: UserNotification;
 
     @CreateDateColumn({ type: "timestamp" })
     createdAt: Date;

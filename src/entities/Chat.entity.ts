@@ -2,6 +2,7 @@ import { PrimaryGeneratedColumn, Entity, CreateDateColumn, UpdateDateColumn, Del
 import { Chats, type ChatTypes } from "../interfaces.enums/database.enums";
 import { Participant } from "./Participant.entity";
 import { Message } from "./Message.entity";
+import { UserNotification } from "./Notification.entity";
 
 @Index("idx_chatName", ["chatName"])
 @Index("idx_updatedAt", ["updatedAt"])
@@ -25,6 +26,9 @@ export class Chat extends BaseEntity {
 
     @OneToMany(() => Message, message => message.chat, { nullable: true })
     messages: Message[];
+
+    @OneToMany(() => UserNotification, notifications => notifications.chat, { nullable: true })
+    notifications: UserNotification[];
 
     @CreateDateColumn({ type: "timestamp" })
     createdAt: Date;

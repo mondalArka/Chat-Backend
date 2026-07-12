@@ -14,6 +14,7 @@ import { Message } from "src/entities/Message.entity";
 import { RedisProvider } from "../redis/redis.provider";
 import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
+import { NotificationRepository } from "src/repositories/notification.repositories";
 
 @Injectable()
 export class MessageService {
@@ -30,7 +31,10 @@ export class MessageService {
         private readonly chatRepo: ChatRepository,
         private readonly socketGateway: SocketGateway,
         private readonly redisService: RedisProvider,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+
+        @Inject("NOTIFICATION_REPOSITORY")
+        private readonly notificationRepo: NotificationRepository
     ) {
         this.redis = this.redisService.getRedisClient();
         this.redisExpire = Number(this.configService.get("REDIS_EXPIRE"));
@@ -123,9 +127,25 @@ export class MessageService {
                 "unreadCount",
                 1
             ),
+
         ]);
 
         this.socketGateway.sendMessage(newMessage);
+        // those who are online
+        this.socketGateway.getUsersNonViewingChat(user?.id as unknown as string, body.chatId)
+            .then(viewingUsersInChat => {
+                const notifications = viewingUsersInChat.map((userId: string) => (
+                    { userId, chatId: body.chatId, messageId: save.id, name: `${user?.name} sent a new message` }
+                ));
+                this.notificationRepo.insertNotification(notifications).catch(err => {
+                    console.error("Error inserting notifications:", err);
+                });
+            })
+            .catch(err => {
+                console.error("Error getting users viewing chat:", err);
+            })
+
+        // this.socketGateway.checkOnWhichChatIsUser();
 
         return {
             statusCode: 200,
