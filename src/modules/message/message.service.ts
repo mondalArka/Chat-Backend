@@ -4,7 +4,7 @@ import { MessageRepository } from "src/repositories/message.repositories";
 import { MediaRepository } from "src/repositories/media.repositories";
 import { getFileType } from "src/helpers/mime-finder";
 import { Media } from "src/entities/Media.entity";
-import { ApiResponse } from "src/interfaces.enums/response.types";
+import { ApiResponse, NotificationParticipant } from "src/interfaces.enums/response.types";
 import { UserType } from "src/interfaces.enums/user.types";
 import { ParticipantRepository } from "src/repositories/participant.repositories";
 import { Not, Raw } from "typeorm";
@@ -15,6 +15,7 @@ import { RedisProvider } from "../redis/redis.provider";
 import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
 import { NotificationRepository } from "src/repositories/notification.repositories";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class MessageService {
@@ -57,8 +58,9 @@ export class MessageService {
             });
         }
 
-        const getParticipants = await this.participantRepo.find({
-            where: { chatId: body.chatId }
+        let getParticipants = await this.participantRepo.find({
+            where: { chatId: body.chatId },
+            relations: ["user"]
         });
 
         const save = await this.messageRepository.saveMessage({
@@ -137,13 +139,39 @@ export class MessageService {
                 const notifications = viewingUsersInChat.map((userId: string) => (
                     { userId, chatId: body.chatId, messageId: save.id, name: `${user?.name} sent a new message` }
                 ));
-                this.notificationRepo.insertNotification(notifications).catch(err => {
-                    console.error("Error inserting notifications:", err);
-                });
+                getParticipants = getParticipants.filter(participant => participant.userId !== user?.id); // filter out the sender
+                this.notificationRepo.insertNotification(notifications)
+                    .then(res => {
+                        notifications.forEach((notification, index) => {
+                            this.socketGateway.sendNotification(
+                                {
+                                    id: res?.identifiers[index]?.id,
+                                    userId: notification.userId,
+                                    name: notification.name,
+                                    chat: {
+                                        id: findChat?.id,
+                                        chatName: findChat?.chatName,
+                                        type: findChat?.type as unknown as "one" | "group",
+                                        participants: getParticipants.map(p => ({
+                                            chatId: p.chatId,
+                                            user: {
+                                                name: p.user.name
+                                            }
+                                        })) as unknown as NotificationParticipant[]
+                                    },
+                                    isRead: false,
+                                    createdAt: new Date().toISOString()
+                                }
+                            )
+                        })
+                    })
+                    .catch(err => {
+                        console.error("Error inserting notifications:", err);
+                    });
             })
             .catch(err => {
                 console.error("Error getting users viewing chat:", err);
-            })
+            });
 
         // this.socketGateway.checkOnWhichChatIsUser();
 
