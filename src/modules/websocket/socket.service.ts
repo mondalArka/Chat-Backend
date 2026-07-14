@@ -10,9 +10,9 @@ import { RedisProvider } from "../redis/redis.provider";
 import { JwtService } from "@nestjs/jwt";
 import { Inject } from "@nestjs/common";
 import { UserRepository } from "src/repositories/user.repository";
-import { ChatRepository } from "src/repositories/chat.reposiotries";
 import { ParticipantRepository } from "src/repositories/participant.repositories";
 import { config } from "dotenv";
+import type { NotificationChatSend } from "src/interfaces.enums/response.types";
 config();
 
 @WebSocketGateway({
@@ -130,5 +130,9 @@ export class SocketGateway {
     checkOnWhichChatIsUser() {
         console.log("Checking on which chat user is");
         this.server.emit("check-chat");
+    }
+
+    sendNotification(data: NotificationChatSend) {
+        this.server.to(`user:${data.userId}`).emit("notification", data);
     }
 }
