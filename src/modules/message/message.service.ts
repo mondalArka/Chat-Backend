@@ -189,7 +189,7 @@ export class MessageService {
         cursor?: string
     ): Promise<ApiResponse<Partial<Message[]>>> {
         const cursorKey = `cursor:${user.id}:${chatId}`;
-
+        let prevCache: string = "";
         const getCursor = await this.redis.get(cursorKey);
         // console.log(getCursor, "getcursor")
         // checking if cursorkey is present and is less than = cursor
@@ -209,9 +209,11 @@ export class MessageService {
                         nextCursor: val?.nextCursor
                     }
             }
-        }
+        } else 
+            prevCache = await this.redis.get(`data:${user.id}:${chatId}:${getCursor}`) as string;
+        
         console.log("not caching");
-        const message = await this.messageRepository.find({
+        let message = await this.messageRepository.find({
             where: {
                 chatId,
                 ...(cursor !== "initial" && { id: Raw(alias => `${alias}<${cursor}`) })
@@ -221,6 +223,7 @@ export class MessageService {
             relations: ["sender", "medias", "replyToMessage", "replyToMessage.medias"],
 
         });
+        message = [...((JSON.parse(prevCache)?.message) ?? []), ...message];
         // console.log(message, "message")
         const nextCursor = message.length > 0 ? message[message.length - 1].id : "initial";
 
