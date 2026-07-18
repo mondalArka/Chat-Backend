@@ -7,43 +7,29 @@ import { ReadChatDto } from './dto/readChat.dto';
 
 @Controller('chat')
 export class ChatController {
-    constructor(
-        private readonly chatService: ChatService
-    ) { }
+  constructor(private readonly chatService: ChatService) {}
 
-    @Post("/")
-    async createChat(
-        @Body() chatDto: CreateChatDto
-    ) {
-        return this.chatService.newChat(chatDto);
-    }
+  @Post('/')
+  async createChat(@Body() chatDto: CreateChatDto) {
+    return this.chatService.newChat(chatDto);
+  }
 
-    @Get("/")
-    async getChats(
-        @CurrentUser() user: UserType
-    ) {
-        return this.chatService.getChat(
-            user
-        );
-    }
+  @Get('/')
+  async getChats(@CurrentUser() user: UserType) {
+    return this.chatService.getChat(user);
+  }
 
-    @Patch("/read")
-    async readChatById(
-        @CurrentUser() user: UserType,
-        @Body() body: ReadChatDto
-    ) {
-        return this.chatService.readChat(
-            body.chatId,
-            user.id
-        );
-    }
+  @Patch('/read')
+  async readChatById(@CurrentUser() user: UserType, @Body() body: ReadChatDto) {
+    return this.chatService.readChat(body.chatId, user.id);
+  }
 
-    // get participants by chatId
-    @Get("/:chatId")
-    async getParticipantsByChat(
-        @CurrentUser() user: UserType,
-        @Param("chatId") chatId: string
-    ) {
-        return this.chatService.getParticipantsByChat(user, chatId);
-    }
+  // get participants by chatId
+  @Get('/:chatId')
+  async getParticipantsByChat(
+    @CurrentUser() user: UserType,
+    @Param('chatId') chatId: string,
+  ) {
+    return this.chatService.getParticipantsByChat(user, chatId);
+  }
 }

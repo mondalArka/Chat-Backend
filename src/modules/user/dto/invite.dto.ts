@@ -1,3 +1,3 @@
 export class InvitationDto {
-    email?: string;
+  email?: string;
 }
