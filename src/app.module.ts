@@ -24,11 +24,11 @@ import { NotificationModule } from './modules/notification/notification.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env'
+      envFilePath: '.env',
     }),
     ServeStaticModule.forRoot({
       rootPath: `${process.cwd()}/public`,
-      serveRoot: '/'// public name is excluded
+      serveRoot: '/', // public name is excluded
     }),
     SocketModule,
     SharedModule,
@@ -36,7 +36,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: useDataSourceFactory,
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     RepositoryModule.forFeature([UserRepo]),
     JWTModule.forRoot(),
@@ -44,7 +44,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     ChatModule,
     MessageModule,
     UserModule,
-    NotificationModule
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [
@@ -55,14 +55,17 @@ import { NotificationModule } from './modules/notification/notification.module';
     },
     {
       provide: APP_FILTER,
-      useClass: HTTPException
-    }
+      useClass: HTTPException,
+    },
   ],
 })
 export class AppModule implements OnModuleInit {
   onModuleInit() {
-    console.log("🕐 Server timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
-    console.log("🕐 UTC offset:", new Date().getTimezoneOffset(), "minutes");
-    console.log("🕐 Current server time:", new Date().toString());
+    console.log(
+      '🕐 Server timezone:',
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+    );
+    console.log('🕐 UTC offset:', new Date().getTimezoneOffset(), 'minutes');
+    console.log('🕐 Current server time:', new Date().toString());
   }
 }

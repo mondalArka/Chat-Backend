@@ -10,48 +10,50 @@ import { DataSource } from 'typeorm';
 
 dotenv.config();
 morgan.token('response-time-ms', (req, res) => {
-  return `${Date.now() - req["startTime"]} ms`;
+  return `${Date.now() - req['startTime']} ms`;
 });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: [
-        String(process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173')
-      ],
-      credentials: true
+      origin: [String(process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173')],
+      credentials: true,
     },
     bodyParser: true,
     rawBody: true,
-    forceCloseConnections: true
+    forceCloseConnections: true,
   });
   const dataSource = app.get(DataSource);
   await Promise.all([
     dataSource.query("SET GLOBAL time_zone = '+05:30'"),
-    dataSource.query("SET time_zone = '+05:30'")
+    dataSource.query("SET time_zone = '+05:30'"),
   ]);
 
   app.use(cookieParser());
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(new ValidationPipe({
-    // whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      // whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
   app.use((req: Request, res: Response, next: NextFunction) => {
-    req["startTime"] = Date.now();
+    req['startTime'] = Date.now();
     next();
   });
-  app.use(morgan(
-    ':method :url - :status - :remote-addr - :user-agent - :response-time-ms',
-    {
-      stream: {
-        write: (message) => {
-          logger.info(message.trim());
-        }
-      }
-    }
-  ))
+  app.use(
+    morgan(
+      ':method :url - :status - :remote-addr - :user-agent - :response-time-ms',
+      {
+        stream: {
+          write: (message) => {
+            logger.info(message.trim());
+          },
+        },
+      },
+    ),
+  );
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
   console.log(`Server is running on port ${process.env.PORT ?? 3000}`);
 }

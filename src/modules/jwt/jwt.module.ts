@@ -5,22 +5,22 @@ import { JwtModule } from '@nestjs/jwt';
 @Global()
 @Module({})
 export class JWTModule {
-    static forRoot() {
-        return {
-            module: JWTModule,
-            imports: [
-                JwtModule.registerAsync({
-                    imports: [ConfigModule],
-                    useFactory: (config: ConfigService) => {
-                        return {
-                            secret: config.get<string>("JWT_SECRET"),
-                            signOptions: { expiresIn: '1h' }
-                        }
-                    },
-                    inject: [ConfigService],
-                })
-            ],
-            exports: [JwtModule]
-        }
-    }
+  static forRoot() {
+    return {
+      module: JWTModule,
+      imports: [
+        JwtModule.registerAsync({
+          imports: [ConfigModule],
+          useFactory: (config: ConfigService) => {
+            return {
+              secret: config.get<string>('JWT_SECRET'),
+              signOptions: { expiresIn: '1h' },
+            };
+          },
+          inject: [ConfigService],
+        }),
+      ],
+      exports: [JwtModule],
+    };
+  }
 }

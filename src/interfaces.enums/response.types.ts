@@ -1,31 +1,31 @@
 export type ApiResponse<T> = {
-    statusCode: number;
-    success: boolean;
-    error?: string | null;
-    message: string | null;
-    data?: T;
-    [key: string]: any;
-}
+  statusCode: number;
+  success: boolean;
+  error?: string | null;
+  message: string | null;
+  data?: T;
+  [key: string]: any;
+};
 
 export type NotificationParticipant = {
-    chatId: string;
-    user: {
-        name: string;
-    };
+  chatId: string;
+  user: {
+    name: string;
+  };
 };
 
 export type NotificationChat = {
-    id: string;
-    type: "one" | "group"; // adjust if there are other chat types in your app
-    chatName: string;
-    participants: NotificationParticipant[];
+  id: string;
+  type: 'one' | 'group'; // adjust if there are other chat types in your app
+  chatName: string;
+  participants: NotificationParticipant[];
 };
 
 export type NotificationChatSend = {
-    id: string;
-    userId: string;
-    name: string;
-    chat: NotificationChat;
-    isRead: boolean;
-    createdAt: string;
-}
+  id: string;
+  userId: string;
+  name: string;
+  chat: NotificationChat;
+  isRead: boolean;
+  createdAt: string;
+};

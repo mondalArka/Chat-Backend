@@ -1,93 +1,98 @@
-import { ForbiddenException, Inject, Injectable } from "@nestjs/common";
-import { Chat } from "src/entities/Chat.entity";
-import { ApiResponse } from "src/interfaces.enums/response.types";
-import { ChatRepository } from "src/repositories/chat.reposiotries";
-import { CreateChatDto } from "./dto/createChat.dto";
-import { ParticipantRepository } from "src/repositories/participant.repositories";
-import { Participant } from "src/entities/Participant.entity";
-import { UserType } from "src/interfaces.enums/user.types";
-import { User } from "src/entities/User.entity";
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { Chat } from 'src/entities/Chat.entity';
+import { ApiResponse } from 'src/interfaces.enums/response.types';
+import { ChatRepository } from 'src/repositories/chat.reposiotries';
+import { CreateChatDto } from './dto/createChat.dto';
+import { ParticipantRepository } from 'src/repositories/participant.repositories';
+import { Participant } from 'src/entities/Participant.entity';
+import { UserType } from 'src/interfaces.enums/user.types';
+import { User } from 'src/entities/User.entity';
 
 @Injectable()
 export class ChatService {
-    constructor(
-        @Inject("CHAT_REPOSITORY")
-        private readonly chatRepo: ChatRepository,
-        @Inject("PARTICIPANT_REPOSITORY")
-        private readonly participantRepo: ParticipantRepository
-    ) { }
+  constructor(
+    @Inject('CHAT_REPOSITORY')
+    private readonly chatRepo: ChatRepository,
+    @Inject('PARTICIPANT_REPOSITORY')
+    private readonly participantRepo: ParticipantRepository,
+  ) {}
 
-    async newChat(body: CreateChatDto): Promise<ApiResponse<Partial<Chat>>> {
-        const save = await this.chatRepo.createChat({
-            chatName: body.chatName,
-            type: body.type,
-        });
-        const participants = body.participants.map((participant) => {
-            return {
-                userId: participant,
-                chatId: save.id
-            }
-        });
-        await this.participantRepo.insertParticipant(participants);
-        return {
-            statusCode: 201,
-            success: true,
-            message: "Chat created successfully",
-            data: save
-        }
-    }
+  async newChat(body: CreateChatDto): Promise<ApiResponse<Partial<Chat>>> {
+    const save = await this.chatRepo.createChat({
+      chatName: body.chatName,
+      type: body.type,
+    });
+    const participants = body.participants.map((participant) => {
+      return {
+        userId: participant,
+        chatId: save.id,
+      };
+    });
+    await this.participantRepo.insertParticipant(participants);
+    return {
+      statusCode: 201,
+      success: true,
+      message: 'Chat created successfully',
+      data: save,
+    };
+  }
 
-    async getChat(user: UserType): Promise<ApiResponse<Partial<Participant[]>>> {
-        const chats = await this.participantRepo.getChatByUser(user.id);
-        return {
-            statusCode: 200,
-            success: true,
-            message: "Chats fetched",
-            data: chats
-        }
-    }
+  async getChat(user: UserType): Promise<ApiResponse<Partial<Participant[]>>> {
+    const chats = await this.participantRepo.getChatByUser(user.id);
+    return {
+      statusCode: 200,
+      success: true,
+      message: 'Chats fetched',
+      data: chats,
+    };
+  }
 
-    async readChat(chatId: string, userId: string): Promise<ApiResponse<object>> {
-        const participant = await this.participantRepo.findOne({
-            where: {
-                chatId: chatId,
-                userId: userId
-            },
-        });
+  async readChat(chatId: string, userId: string): Promise<ApiResponse<object>> {
+    const participant = await this.participantRepo.findOne({
+      where: {
+        chatId: chatId,
+        userId: userId,
+      },
+    });
 
-        if (!participant)
-            throw new ForbiddenException("You are not a participant of this chat");
+    if (!participant)
+      throw new ForbiddenException('You are not a participant of this chat');
 
-        await this.participantRepo.update(
-            {
-                chatId: chatId,
-                userId: userId
-            },
-            {
-                unreadCount: 0
-            }
-        );
+    await this.participantRepo.update(
+      {
+        chatId: chatId,
+        userId: userId,
+      },
+      {
+        unreadCount: 0,
+      },
+    );
 
-        return {
-            statusCode: 200,
-            success: true,
-            message: "Messages read"
-        }
-    }
+    return {
+      statusCode: 200,
+      success: true,
+      message: 'Messages read',
+    };
+  }
 
-    async getParticipantsByChat(user: UserType, chatId: string): Promise<ApiResponse<Partial<User[]>>> {
-        let participants = await this.participantRepo.find({
-            where: { chatId },
-            relations: ["user"]
-        });
+  async getParticipantsByChat(
+    user: UserType,
+    chatId: string,
+  ): Promise<ApiResponse<Partial<User[]>>> {
+    const participants = await this.participantRepo.find({
+      where: { chatId },
+      relations: ['user'],
+    });
 
-        const users = participants.filter((p) => p.user.id !== user.id).map((p) => p.user);
+    const users = participants
+      .filter((p) => p.user.id !== user.id)
+      .map((p) => p.user);
 
-        return {
-            statusCode: 200,
-            success: true,
-            message: "Participants fetched",
-            data: users
-        }
-    }
+    return {
+      statusCode: 200,
+      success: true,
+      message: 'Participants fetched',
+      data: users,
+    };
+  }
 }
