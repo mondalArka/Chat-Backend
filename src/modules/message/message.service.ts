@@ -64,7 +64,7 @@ export class MessageService {
       });
     }
 
-    let getParticipants = await this.participantRepo.find({
+    const getParticipants = await this.participantRepo.find({
       where: { chatId: body.chatId },
       relations: ['user'],
     });
@@ -150,10 +150,10 @@ export class MessageService {
       .getUsersNonViewingChat(user?.id as unknown as string, body.chatId)
       .then((viewingUsersInChat) => {
         const notificationMap = new Map<string, boolean>(); // <userId, and who are currently online>
-        let notifications: NotificationCreate[] = [];
+        const notifications: NotificationCreate[] = [];
 
         // includes online users who are not in chat
-        for (let notif of viewingUsersInChat) {
+        for (const notif of viewingUsersInChat) {
           notificationMap.set(notif.userId, notif.isViewing);
           if (!notif.isViewing)
             notifications.push({

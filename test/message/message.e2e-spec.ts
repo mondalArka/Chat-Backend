@@ -29,9 +29,9 @@ describe('Message e2e for route', () => {
   describe('GET /message/:chatId', () => {
     it('should return 200 with messages for that chat', async () => {
       const chats = await api(app, sessionId).get('/chat').expect(200);
-      const chatId = chats.body?.data[0].id;
+      const chatId = chats.body?.data[0]?.id;
       const res = await api(app, sessionId)
-        .get(`/message/${chatId}`)
+        .get(`/message/${chatId}?cursor=initial`)
         .expect(200);
     });
   });
