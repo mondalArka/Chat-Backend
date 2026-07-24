@@ -16,9 +16,11 @@ import { Chats, type ChatTypes } from '../interfaces.enums/database.enums';
 import { Participant } from './Participant.entity';
 import { Message } from './Message.entity';
 import { UserNotification } from './Notification.entity';
+import { User } from './User.entity';
 
 @Index('idx_chatName', ['chatName'])
 @Index('idx_updatedAt', ['updatedAt'])
+@Index('idx_createdBy', ['createdById'])
 @Entity('chats')
 export class Chat extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true })
@@ -44,6 +46,9 @@ export class Chat extends BaseEntity {
   @OneToMany(() => Participant, (participant) => participant.chat)
   participants: Participant[];
 
+  @Column({ type: 'bigint', unsigned: true, nullable: true })
+  createdById: string;
+
   @OneToMany(() => Message, (message) => message.chat, { nullable: true })
   messages: Message[];
 
@@ -51,6 +56,13 @@ export class Chat extends BaseEntity {
     nullable: true,
   })
   notifications: UserNotification[];
+
+  @ManyToOne(() => User, (user) => user.createdBy, { nullable: false })
+  @JoinColumn({
+    name: 'createdById',
+    foreignKeyConstraintName: 'FK_user_chats_createdBy',
+  })
+  createdBy: User;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

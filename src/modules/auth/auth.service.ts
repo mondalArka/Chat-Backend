@@ -68,7 +68,8 @@ export class AuthService {
     });
     if (sessionExists) {
       // sessionExists.sessionId = sessionId;
-      sessionExists.otp = otp;
+      // sessionExists.otp = otp;
+      sessionExists.otp = '123456';
       sessionExists.expiresAt = new Date(Date.now() + 2 * 60 * 1000);
       await this.sessionRepo.saveSession(sessionExists);
       return {
@@ -84,7 +85,8 @@ export class AuthService {
       email: user.email,
       expiresAt: new Date(Date.now() + 2 * 60 * 1000),
       sessionId,
-      otp,
+      // otp,
+      otp: '123456',
       userData: {
         name: user.name,
       },

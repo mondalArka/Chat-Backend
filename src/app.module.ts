@@ -19,16 +19,27 @@ import { UserModule } from './modules/user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { UserRepo } from './repositories/index.repositories';
 import { NotificationModule } from './modules/notification/notification.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath:
+        process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     }),
     ServeStaticModule.forRoot({
       rootPath: `${process.cwd()}/public`,
       serveRoot: '/', // public name is excluded
+    }),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        connection: {
+          host: String(config.get('REDIS_HOST')),
+          port: Number(config.get('REDIS_PORT')),
+        },
+      }),
     }),
     SocketModule,
     SharedModule,

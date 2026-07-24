@@ -163,15 +163,15 @@ export class MessageService {
               name: `${user?.name} sent a new message`,
             });
         }
-
         for (let i = 0; i < getParticipants.length; i++) {
-          if (getParticipants[i].userId === user?.id)
-            getParticipants.splice(i, 1);
-
+          if (getParticipants[i].userId === user?.id) {
+            // getParticipants.splice(i, 1);
+            continue;
+          }
           // includes offline users also, only allow once per userId
           if (
-            !notificationMap.has(getParticipants[i].userId) &&
-            notificationMap.get(getParticipants[i].userId) !== true
+            !notificationMap.has(getParticipants[i]?.userId) &&
+            notificationMap.get(getParticipants[i]?.userId) !== true
           )
             notifications.push({
               userId: getParticipants[i].userId,

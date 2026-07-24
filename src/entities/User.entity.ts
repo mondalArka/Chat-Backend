@@ -12,6 +12,7 @@ import {
 import { Participant } from './Participant.entity';
 import { Message } from './Message.entity';
 import { UserNotification } from './Notification.entity';
+import { Chat } from './Chat.entity';
 @Entity('users')
 @Index('email_idx', ['email'], { unique: true })
 export class User extends BaseEntity {
@@ -35,6 +36,9 @@ export class User extends BaseEntity {
     (user_notification) => user_notification.user,
   )
   notifications: UserNotification[];
+
+  @OneToMany(() => Chat, (chat) => chat.createdBy)
+  createdBy: Chat;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

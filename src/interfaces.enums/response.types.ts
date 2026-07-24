@@ -29,3 +29,21 @@ export type NotificationChatSend = {
   isRead: boolean;
   createdAt: string;
 };
+
+export type ChatParticipant = {
+  userId: number;
+  name: string;
+  email: string;
+  unreadCount: number;
+};
+
+export type NewChatType = {
+  chatId: string;
+  chatName: string;
+  lastMessageContent: string | null;
+  lastMessageTime: string | null;
+  participants: ChatParticipant[];
+  createdAt: Date;
+  updatedAt: Date;
+  chatType: string;
+};

@@ -11,8 +11,8 @@ export const dataSourceOptions: DataSourceOptions = {
   host: String(process.env.DB_HOST),
   port: Number(process.env.DB_PORT) || 3306,
   username: String(process.env.DB_USERNAME),
-  password: String(process.env.DB_PASSWORD),
-  database: String(process.env.DB_NAME),
+  password: String(process.env.MYSQL_ROOT_PASSWORD),
+  database: String(process.env.MYSQL_DATABASE),
   type: 'mysql',
   entities: [
     isCompiled
@@ -41,8 +41,8 @@ export const useDataSourceFactory = (
     host: String(config.get('DB_HOST')),
     port: Number(config.get('DB_PORT')),
     username: String(config.get('DB_USERNAME')),
-    password: String(config.get('DB_PASSWORD')),
-    database: String(config.get('DB_NAME')),
+    password: String(config.get('MYSQL_ROOT_PASSWORD')),
+    database: String(config.get('MYSQL_DATABASE')),
     entities: [
       isCompiled
         ? process.cwd() + '/dist/entities/**/*.entity.{ts,js}'
