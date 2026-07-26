@@ -26,7 +26,7 @@
     "test:message": "jest --config ./test/jest-e2e.json message/ --detectOpenHandles",
     "test:user": "jest --config ./test/jest-e2e.json user/ --detectOpenHandles",
     "test:all": "jest --config ./test/jest-e2e.json --detectOpenHandles",
-    "prepare": "husky"
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky; fi"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.4",
