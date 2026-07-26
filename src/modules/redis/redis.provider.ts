@@ -6,10 +6,13 @@ import Redis from 'ioredis';
 export class RedisProvider implements OnModuleDestroy {
   private readonly redisClient: Redis;
   constructor(configService: ConfigService) {
-    this.redisClient = new Redis({
-      host: String(configService.get('REDIS_HOST')),
-      port: Number(configService.get('REDIS_PORT')),
-    });
+    this.redisClient =
+      process.env.NODE_ENV === 'production'
+        ? new Redis(configService.getOrThrow<string>('REDIS_URL'))
+        : new Redis({
+            host: configService.getOrThrow<string>('REDIS_HOST'),
+            port: Number(configService.getOrThrow<string>('REDIS_PORT')),
+          });
 
     this.redisClient.on('error', (error) => {
       console.error('Error connecting to Redis', error);
