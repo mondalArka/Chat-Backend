@@ -7,8 +7,12 @@ export class RedisProvider implements OnModuleDestroy {
   private readonly redisClient: Redis;
   constructor(configService: ConfigService) {
     this.redisClient = new Redis({
-      host: String(configService.get('REDIS_HOST')),
-      port: Number(configService.get('REDIS_PORT')),
+      host: String(configService.getOrThrow('REDIS_HOST')),
+      port: Number(configService.getOrThrow('REDIS_PORT')),
+      ...(process.env.NODE_ENV === 'production' && {
+        password: configService.getOrThrow<string>('REDIS_PASSWORD'),
+        tls: {},
+      }),
     });
 
     this.redisClient.on('error', (error) => {
