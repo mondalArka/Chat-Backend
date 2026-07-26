@@ -81,8 +81,8 @@ export class ChatService {
     }
     // }
 
-    let userIds: string[] = [];
-    let participantList: ChatParticipant[] = [];
+    const userIds: string[] = [];
+    const participantList: ChatParticipant[] = [];
     let chatExistKey: string = 'chatExists';
     const save = await this.chatRepo.createChat({
       chatName: body.chatName,

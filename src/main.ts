@@ -14,9 +14,10 @@ morgan.token('response-time-ms', (req, res) => {
 });
 
 async function bootstrap() {
+  const origins = process.env.ALLOWED_ORIGINS?.split(',') ?? [];
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: [String(process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173')],
+      origin: origins,
       credentials: true,
     },
     bodyParser: true,
