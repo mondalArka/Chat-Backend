@@ -24,11 +24,13 @@ async function bootstrap() {
     rawBody: true,
     forceCloseConnections: true,
   });
-  const dataSource = app.get(DataSource);
-  await Promise.all([
-    dataSource.query("SET GLOBAL time_zone = '+05:30'"),
-    dataSource.query("SET time_zone = '+05:30'"),
-  ]);
+  if (process.env.NODE_ENV !== 'production') {
+    const dataSource = app.get(DataSource);
+    await Promise.all([
+      dataSource.query("SET GLOBAL time_zone = '+05:30'"),
+      dataSource.query("SET time_zone = '+05:30'"),
+    ]);
+  }
 
   app.use(cookieParser());
   app.setGlobalPrefix('api');
