@@ -3,7 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
 import { TimezoneSubscriber } from './subcribers/time.subcriber';
+import { config } from 'dotenv';
+config();
 
+const isProduction = process.env.NODE_ENV === 'production';
 console.log(__dirname + '/src/entities/User.entity.ts');
 dotenv.config();
 const isCompiled = __filename.endsWith('.js');
@@ -13,6 +16,7 @@ export const dataSourceOptions: DataSourceOptions = {
   username: String(process.env.DB_USERNAME),
   password: String(process.env.MYSQL_ROOT_PASSWORD),
   database: String(process.env.MYSQL_DATABASE),
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
   type: 'mysql',
   entities: [
     isCompiled
@@ -43,6 +47,7 @@ export const useDataSourceFactory = (
     username: String(config.get('DB_USERNAME')),
     password: String(config.get('MYSQL_ROOT_PASSWORD')),
     database: String(config.get('MYSQL_DATABASE')),
+    ssl: isProduction ? { rejectUnauthorized: false } : false,
     entities: [
       isCompiled
         ? process.cwd() + '/dist/entities/**/*.entity.{ts,js}'
