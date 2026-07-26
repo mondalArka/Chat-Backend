@@ -1,0 +1,6 @@
+echo "Running tests..."
+npm test
+npm run test:all
+
+echo "Running linter..."
+npm run lint

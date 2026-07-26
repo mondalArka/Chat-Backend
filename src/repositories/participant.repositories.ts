@@ -52,4 +52,33 @@ export class ParticipantRepository extends Repository<Participant> {
 
     return query;
   }
+
+  async checkChatExists(participantIds: string[]): Promise<
+    {
+      chatId: string;
+      chatType: string;
+      createdById: string;
+      participants: number[];
+    }[]
+  > {
+    console.log(participantIds, 'idssssssss');
+    const result = await this.createQueryBuilder('participant')
+      .leftJoin('participant.chat', 'chat')
+      .where('participant.userId IN (:...participantIds)', { participantIds })
+      .select('chat.id', 'chatId')
+      .addSelect('chat.type', 'chatType')
+      .addSelect('chat.createdBy.id', 'createdById')
+      .addSelect('JSON_ARRAYAGG(participant.userId)', 'participants')
+      .groupBy('chat.id')
+      .addGroupBy('chat.type')
+      .addGroupBy('chat.createdBy.id')
+      .getRawMany();
+
+    return result as {
+      chatId: string;
+      chatType: string;
+      createdById: string;
+      participants: number[];
+    }[];
+  }
 }

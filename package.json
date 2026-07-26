@@ -25,7 +25,8 @@
     "test:chat": "jest --config ./test/jest-e2e.json chat/ --detectOpenHandles",
     "test:message": "jest --config ./test/jest-e2e.json message/ --detectOpenHandles",
     "test:user": "jest --config ./test/jest-e2e.json user/ --detectOpenHandles",
-    "test:all": "jest --config ./test/jest-e2e.json --detectOpenHandles"
+    "test:all": "jest --config ./test/jest-e2e.json --detectOpenHandles",
+    "prepare": "husky"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.4",
@@ -80,6 +81,7 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^17.0.0",
+    "husky": "^9.1.7",
     "jest": "^30.0.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",

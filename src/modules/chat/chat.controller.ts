@@ -10,8 +10,11 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post('/')
-  async createChat(@Body() chatDto: CreateChatDto) {
-    return this.chatService.newChat(chatDto);
+  async createChat(
+    @CurrentUser() user: UserType,
+    @Body() chatDto: CreateChatDto,
+  ) {
+    return this.chatService.newChat(user, chatDto);
   }
 
   @Get('/')

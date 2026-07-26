@@ -1,0 +1,5 @@
+echo "Building..."
+npm run build || exit 1
+
+# echo "Running e2e tests..."
+# npm run test:e2e || exit 1

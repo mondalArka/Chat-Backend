@@ -12,7 +12,10 @@ import { Inject } from '@nestjs/common';
 import { UserRepository } from 'src/repositories/user.repository';
 import { ParticipantRepository } from 'src/repositories/participant.repositories';
 import { config } from 'dotenv';
-import type { NotificationChatSend } from 'src/interfaces.enums/response.types';
+import type {
+  NewChatType,
+  NotificationChatSend,
+} from 'src/interfaces.enums/response.types';
 config();
 
 @WebSocketGateway({
@@ -146,5 +149,22 @@ export class SocketGateway {
 
   sendNotification(data: NotificationChatSend) {
     this.server.to(`user:${data.userId}`).emit('notification', data);
+  }
+
+  joinParticipantsToChat(userIds: string[], chatId: string) {
+    userIds.forEach((userId) => {
+      console.log(userId, 'ioioioio');
+      this.server.in(`user:${userId}`).socketsJoin(chatId);
+    });
+    // console.log(
+    //   'Room members for',
+    //   chatId,
+    //   ':',
+    //   this.server.sockets.adapter.rooms.get(chatId),
+    // );
+  }
+
+  newChatSocket(chat: NewChatType) {
+    this.server.to(chat.chatId).emit('new-chat', chat);
   }
 }

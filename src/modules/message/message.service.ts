@@ -64,7 +64,7 @@ export class MessageService {
       });
     }
 
-    let getParticipants = await this.participantRepo.find({
+    const getParticipants = await this.participantRepo.find({
       where: { chatId: body.chatId },
       relations: ['user'],
     });
@@ -150,10 +150,10 @@ export class MessageService {
       .getUsersNonViewingChat(user?.id as unknown as string, body.chatId)
       .then((viewingUsersInChat) => {
         const notificationMap = new Map<string, boolean>(); // <userId, and who are currently online>
-        let notifications: NotificationCreate[] = [];
+        const notifications: NotificationCreate[] = [];
 
         // includes online users who are not in chat
-        for (let notif of viewingUsersInChat) {
+        for (const notif of viewingUsersInChat) {
           notificationMap.set(notif.userId, notif.isViewing);
           if (!notif.isViewing)
             notifications.push({
@@ -163,15 +163,15 @@ export class MessageService {
               name: `${user?.name} sent a new message`,
             });
         }
-
         for (let i = 0; i < getParticipants.length; i++) {
-          if (getParticipants[i].userId === user?.id)
-            getParticipants.splice(i, 1);
-
+          if (getParticipants[i].userId === user?.id) {
+            // getParticipants.splice(i, 1);
+            continue;
+          }
           // includes offline users also, only allow once per userId
           if (
-            !notificationMap.has(getParticipants[i].userId) &&
-            notificationMap.get(getParticipants[i].userId) !== true
+            !notificationMap.has(getParticipants[i]?.userId) &&
+            notificationMap.get(getParticipants[i]?.userId) !== true
           )
             notifications.push({
               userId: getParticipants[i].userId,
