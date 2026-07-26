@@ -12,11 +12,14 @@ import { InviteProcessor } from 'src/processors/invite.processors';
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
+        const redisUrl = config.get<string>('REDIS_URL');
         return {
-          connection: {
-            host: String(config.get('REDIS_HOST')),
-            port: Number(config.get('REDIS_PORT')),
-          },
+          connection: redisUrl
+            ? { url: redisUrl }
+            : {
+                host: config.getOrThrow<string>('REDIS_HOST'),
+                port: config.getOrThrow<number>('REDIS_PORT'),
+              },
         };
       },
     }),

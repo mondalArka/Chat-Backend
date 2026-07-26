@@ -27,6 +27,7 @@ import { BullModule } from '@nestjs/bullmq';
       isGlobal: true,
       envFilePath:
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
     ServeStaticModule.forRoot({
       rootPath: `${process.cwd()}/public`,
@@ -34,12 +35,17 @@ import { BullModule } from '@nestjs/bullmq';
     }),
     BullModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        connection: {
-          host: String(config.get('REDIS_HOST')),
-          port: Number(config.get('REDIS_PORT')),
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        const redisUrl = config.get<string>('REDIS_URL');
+        return {
+          connection: redisUrl
+            ? { url: redisUrl }
+            : {
+                host: config.getOrThrow<string>('REDIS_HOST'),
+                port: config.getOrThrow<number>('REDIS_PORT'),
+              },
+        };
+      },
     }),
     SocketModule,
     SharedModule,
