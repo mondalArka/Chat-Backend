@@ -1,0 +1,69 @@
+chai: balsck_tea # key value pair, value as string
+chai_list_array: # list or array of values
+  - cold_coffee
+  - hot_coffee
+  - masala_tea
+
+recipe_dictionary: # dictionary with key value with spices as list
+  utensiles: pan
+  spices:
+    - cardamom
+    - milk
+    - sugar
+  special_spices: salt
+
+books:
+  - id: 1
+    name: Harry Potter
+    author:
+      - JK Rowling
+      - Harry Sen
+        # sepcial_mention: Mr.Dutt
+
+  - id: 2
+    name: Lord of the Rings
+    author:
+      - id: 1
+        name: Tolkien
+
+      - id: 2
+        name: Tughlaq
+
+covert_to_string: !!str 123 # convert a number to string
+convert_to_num: !!int '123'
+
+bool_true: true
+bool_false: false
+bool_yes: yes # true
+bool_no: no # false
+
+multi_strings: | # multi line string
+  lime1
+  lime2
+
+multi_linenums_bools: | # multi line bools converts to string
+  true
+  false
+  2
+  3
+
+default: &default_base
+  requirements: 12 gb ram
+  os: windows 10
+  hardwares:
+    cpu:
+      - ram: 8 gb
+        storage: 100 gb
+        processor: 1 ghz
+
+    physical:
+      - keyboard: 1
+        mouse: 1
+        monitor: 2
+
+create_pc:
+  <<: *default_base
+  extras:
+    - keyboard: 1
+      mouse: 1
+      monitor: 2

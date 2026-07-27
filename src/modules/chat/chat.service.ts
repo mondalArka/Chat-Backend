@@ -11,39 +11,21 @@ import { Participant } from 'src/entities/Participant.entity';
 import { UserType } from 'src/interfaces.enums/user.types';
 import { User } from 'src/entities/User.entity';
 import { SocketGateway } from '../websocket/socket.service';
-import { RedisProvider } from '../redis/redis.provider';
-import Redis from 'ioredis';
 
 @Injectable()
 export class ChatService {
-  private redis: Redis;
   constructor(
     @Inject('CHAT_REPOSITORY')
     private readonly chatRepo: ChatRepository,
     @Inject('PARTICIPANT_REPOSITORY')
     private readonly participantRepo: ParticipantRepository,
     private readonly socketGateway: SocketGateway,
-    private readonly redisService: RedisProvider,
-  ) {
-    this.redis = this.redisService.getRedisClient();
-  }
+  ) {}
 
   async newChat(
     user: UserType,
     body: CreateChatDto,
   ): Promise<ApiResponse<Partial<Chat>>> {
-    let ifExists: string = 'chatExists';
-    body.participants.forEach((id) => (ifExists += `:${id}`));
-    const getExists = await this.redis.hget(`ifExists`, 'type');
-    console.log(
-      getExists,
-      JSON.parse(getExists!),
-      'popop',
-      getExists && JSON.parse(getExists).type === body.type,
-    );
-    if (getExists && JSON.parse(getExists).type === body.type)
-      throw new ForbiddenException('Chat already exists');
-
     const checkChatExists = await this.participantRepo.checkChatExists(
       body.participants,
     );
@@ -83,7 +65,7 @@ export class ChatService {
 
     const userIds: string[] = [];
     const participantList: ChatParticipant[] = [];
-    let chatExistKey: string = 'chatExists';
+
     const save = await this.chatRepo.createChat({
       chatName: body.chatName,
       type: body.type,
@@ -97,14 +79,7 @@ export class ChatService {
     });
 
     await this.participantRepo.insertParticipant(insertParticipants);
-    body.participants.forEach((id) => (chatExistKey += `:${id}`));
-    // save this to redis
-    await this.redis.hset(chatExistKey, {
-      chatId: save.id,
-      participants: body.participants,
-      type: save.type,
-      createdById: save.createdBy.id,
-    });
+
     const participants = await this.participantRepo.find({
       where: {
         chat: { id: save.id },
