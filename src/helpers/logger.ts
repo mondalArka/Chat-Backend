@@ -1,7 +1,7 @@
 import { createLogger, format, transports } from 'winston';
 import fs from 'fs';
 
-if (!fs.existsSync) fs.mkdirSync('logs');
+if (!fs.existsSync('logs')) fs.mkdirSync('logs');
 
 export const logger = createLogger({
   format: format.combine(
