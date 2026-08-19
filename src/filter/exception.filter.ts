@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { logger } from 'src/helpers/logger';
 
 export class HTTPException implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
@@ -34,6 +35,13 @@ export class HTTPException implements ExceptionFilter {
         break;
       }
     }
+    logger.error({
+      statusCode: status,
+      method: request.method,
+      path: request.url,
+      message: validationMessages || message,
+      ...(status >= 500 && { stack: (exception as Error)?.stack }),
+    });
 
     response.status(status).json({
       statusCode: status,
